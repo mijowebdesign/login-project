@@ -1,10 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
@@ -17,7 +18,7 @@ app.use(express.json());
 // 1. Povezivanje na MongoDB
 // Zameni 'login_db' sa imenom tvoje baze. 
 // Ako koristiš MongoDB Atlas, ovde ide tvoj "Connection String"
-const MONGO_URI = 'mongodb+srv://mijoandjic_db_user:QwA1CPyjin4yE051@cluster0.mcqjucq.mongodb.net/?appName=Cluster0';
+const MONGO_URI = process.env.MONGO_URI; 
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('Povezano sa MongoDB bazom'))
