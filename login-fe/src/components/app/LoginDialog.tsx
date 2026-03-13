@@ -1,4 +1,3 @@
-import { useState } from 'react';
 
 import {
   Dialog,
@@ -9,37 +8,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-import {  useNavigate } from 'react-router-dom';
-
-import { login } from '@/services/authService';
-import type { LoginRequest } from '@/services/authService';
 import LoginForm from "@/pages/auth/LoginForm";
-import type { UserState } from '@/AppRouter';
 
 
-
-const LoginDialog = ({ setUser , open, onOpenChange }: { setUser: (user: UserState | null) => void, open: boolean, onOpenChange: (open: boolean) => void }) => {
-
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState<string | null>(null);
-
-      const navigate = useNavigate();
-
-  const handleLogin = async (formData: LoginRequest) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await login(formData);
-      setUser( data?.user || null);
-      localStorage.setItem('user', JSON.stringify(data?.user || null));
-      onOpenChange(false);
-      navigate('/admin-panel');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Greška pri prijavi.');
-    } finally {
-      setLoading(false);
-    }
-  };
+const LoginDialog = ( {open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) => {
 
   return (
    <Dialog open={open} onOpenChange={onOpenChange}>
@@ -52,7 +24,7 @@ const LoginDialog = ({ setUser , open, onOpenChange }: { setUser: (user: UserSta
           </DialogHeader>
     
         {/* Form */}
-        <LoginForm onLogin={handleLogin} loading={loading} error={error} />
+        <LoginForm  />
           
           <DialogFooter>
           </DialogFooter>

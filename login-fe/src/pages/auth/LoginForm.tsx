@@ -1,27 +1,30 @@
-import React, { useActionState, useEffect, useRef } from 'react';
+import React, {  useActionState, useEffect, useRef } from 'react';
 
 import { User, Lock, Loader2, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { action } from './utils/actions';
+import { login } from '@/state/user/userSlice';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '@/state/useAppDispatch';
+import type { RootState } from '@/state/store';
 
- interface LoginFormProps {
-  onLogin: (formData: { email: string; password: string }) => void;
-  loading: boolean;
-  error: string | null;
-}
 
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading, error }) => {
+const LoginForm: React.FC= () => {
   const formRef = useRef<HTMLFormElement>(null);
 
 const [state, formAction] = useActionState( action, null);
+
+const loading = useSelector((state: RootState) => state.user.isPending);
+const error = useSelector((state: RootState) => state.user.message);
+const dispatch = useAppDispatch();
 
 console.log('LoginForm state:', state);
 
 useEffect(() => {
   if (state?.formData) {
-    onLogin(state.formData);
+    dispatch(login(state.formData));
   }
-}, [state, onLogin]);
+}, [state]);
 
   return (
     <div className="flex items-center justify-center">
@@ -60,10 +63,6 @@ useEffect(() => {
                   required
                   className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                   placeholder="admin@test.com"
-                 
-                 
-                  // value={formData.email}
-                  // onChange={handleChange}
                 />
 
                 {state?.errors?.email && (<p className="text-red-600 text-xs mt-1">{state.errors.email}</p>)}
@@ -83,8 +82,6 @@ useEffect(() => {
                   required
                   className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                   placeholder="sifra123"
-                  // value={formData.password}
-                  // onChange={handleChange}
                 />
                 {state?.errors?.password && (<p className="text-red-600 text-xs mt-1">{state.errors.password}</p>)}
               </div>
@@ -92,7 +89,7 @@ useEffect(() => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || undefined}
               className={`w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-lg text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all ${
                 loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 shadow-lg hover:shadow-xl'
               }`}

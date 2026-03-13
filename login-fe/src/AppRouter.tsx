@@ -1,21 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import RegistrationForm from './pages/auth/RegistrationForm';
 import Dashboard from './pages/Dashboard';
 import AdminPanel from './pages/AdminPanel';  
 import MainNavbar from './components/app/MainNavbar';
+import type { UserState } from './types/Login';
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState } from '@/state/store';
+import { setUser } from './state/user/userSlice';
 
 
- export interface UserState {
-    name: string;
-    email: string;
-    token?: string;
-  
-}
 
-const AppLayout = ({ children, user, setUser, onLogout }: { children: React.ReactNode, user: UserState | null, setUser: (user: UserState | null) => void, onLogout: () => void }) => {
+const AppLayout = ({ children }: { children: React.ReactNode}) => {
   return <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
-    <MainNavbar user={user} setUser={setUser}  onLogout={onLogout}  />
+    <MainNavbar  />
     <main className="flex-1 overflow-y-auto " >
     {children}
     </main>
@@ -23,30 +21,26 @@ const AppLayout = ({ children, user, setUser, onLogout }: { children: React.Reac
 };
 
 
-const ProtectedRoute = ({ children, user, setUser , onLogout}: { children: React.ReactNode, user: UserState | null , setUser: (user: UserState | null) => void, onLogout: () => void }) => {
+const ProtectedRoute = ({ children, user }: { children: React.ReactNode, user: UserState | null }) => {
   if(!user) {
   return <Navigate to="/" />;
 }
-return <AppLayout user={user} setUser={setUser} onLogout={onLogout}>{children}</AppLayout>
+return <AppLayout >{children}</AppLayout>
 };
 
 
 const AppRouter: React.FC = () => {
-  const [user, setUser] = useState<UserState | null>(null);
- 
-  const navigate = useNavigate();
+  
+
+  const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
-    if (savedUser) setUser(JSON.parse(savedUser));
+    if (savedUser) dispatch(setUser(JSON.parse(savedUser)));
   }, []);
 
-
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
 
   return (
     <Routes>
@@ -54,13 +48,13 @@ const AppRouter: React.FC = () => {
       <Route
         path="/admin-panel"
         element={
-          <ProtectedRoute user={user} setUser={setUser} onLogout={handleLogout}>
-           <AdminPanel user={user!} onLogout={handleLogout} />
+          <ProtectedRoute user={user} >
+           <AdminPanel user={user} />
           </ProtectedRoute>
         }
       />
         <Route path="/register" element={user ? <Navigate to="/" /> : <RegistrationForm />} />
-      <Route path="/" element={<AppLayout user={user} setUser={setUser} onLogout={handleLogout} ><Dashboard  /></AppLayout>} />
+      <Route path="/" element={<AppLayout ><Dashboard  /></AppLayout>} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

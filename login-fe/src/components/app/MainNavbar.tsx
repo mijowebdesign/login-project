@@ -10,22 +10,25 @@ import {
 
 import NavbarItems from "./NavbarItems";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { UserState} from "@/AppRouter";
 import logo from "@/assets/images.png"; // Importuj logo
 import LoginDialog from "./LoginDialog";
 import { useState } from "react";
+import { useSelector, useDispatch} from "react-redux";
+import type { RootState } from "@/state/store";
+import { clearUser } from "@/state/user/userSlice";
 
-
-
-interface MainNavbarProps {
-  user: UserState | null;
-  setUser: (user: UserState | null) => void; // Dodajemo setUser funkciju kao prop
-  onLogout?: () => void; // Dodajemo logout funkciju kao prop
-}
-
-const MainNavbar = ({ user, setUser, onLogout }: MainNavbarProps) => {
+const MainNavbar = () => {
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+
+
+  const onLogout = () => {
+    dispatch(clearUser());
+    localStorage.removeItem('user');
+   
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur h-16">
@@ -54,14 +57,14 @@ const MainNavbar = ({ user, setUser, onLogout }: MainNavbarProps) => {
       <LoginDialog 
         open={isLoginOpen} 
         onOpenChange={setIsLoginOpen} 
-        setUser={setUser} 
+       
       />
           
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-none">
                 <Avatar className="h-9 w-9 border hover:opacity-80 transition">
                   {/* Ako user ima sliku u bazi, stavi je ovde */}
-                  <AvatarImage src={user?.name || "https://github.com/shadcn.png"} alt={user?.name} />
+                  <AvatarImage src={user?.name || "https://github.com/shadcn.png"} alt={user?.name || undefined} />
                   {/* Fallback su inicijali ako slika ne postoji */}
                   <AvatarFallback className="bg-gray-750 text-white">
                     {user?.name?.charAt(0).toUpperCase() || "U"}
@@ -70,7 +73,7 @@ const MainNavbar = ({ user, setUser, onLogout }: MainNavbarProps) => {
               </DropdownMenuTrigger>
               
               <DropdownMenuContent align="end" className="w-56">
-                { user ? <>
+                { user?.email ? <>
                 <DropdownMenuLabel>
                   <div className="flex flex-col">
                     <span>{user.name}</span>
