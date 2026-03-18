@@ -3,6 +3,7 @@ import type {UserState, LoginRequest} from '@/types/Login';
 import { login as loginApi } from '@/services/authService';
 import type { AxiosError } from 'axios';
 
+
 const initialState: UserState = {
     name: null,
     email: null,

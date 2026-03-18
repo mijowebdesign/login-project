@@ -1,7 +1,7 @@
 import React, {  useActionState, useEffect, useRef } from 'react';
 
 import { User, Lock, Loader2, LogIn } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { action } from './utils/actions';
 import { login } from '@/state/user/userSlice';
 import { useSelector } from 'react-redux';
@@ -13,6 +13,7 @@ const LoginForm: React.FC= () => {
   const formRef = useRef<HTMLFormElement>(null);
 
 const [state, formAction] = useActionState( action, null);
+const navigate = useNavigate();
 
 const loading = useSelector((state: RootState) => state.user.isPending);
 const error = useSelector((state: RootState) => state.user.message);
@@ -22,7 +23,12 @@ console.log('LoginForm state:', state);
 
 useEffect(() => {
   if (state?.formData) {
-    dispatch(login(state.formData));
+    dispatch(login(state.formData)).unwrap().then((result)=>{
+      console.log('Login successful:', result);
+      navigate('/admin-panel');
+    }).catch((err) => {
+      console.error('Login failed:', err);
+    }); 
   }
 }, [state]);
 
