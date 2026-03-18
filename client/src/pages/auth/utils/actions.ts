@@ -1,6 +1,6 @@
 
 
-export const action = async ( prevState: any, formData: FormData) => {
+export const action = async ( _prevState: any, formData: FormData) => {
     const email = formData.get('email') as string || '';
     const password = formData.get('password') as string || '';
     

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 
 interface DashboardProps {
   user: { name: string | null; email: string |null};
