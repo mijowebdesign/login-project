@@ -109,7 +109,7 @@ const RegistrationForm: React.FC = () => {
 
           <p className="text-center text-sm text-gray-600 mt-4">
             Već imaš nalog?{' '}
-            <Link to="/login" className="text-blue-600 font-semibold hover:underline">
+            <Link to="/" className="text-blue-600 font-semibold hover:underline">
               Prijavi se
             </Link>
           </p>

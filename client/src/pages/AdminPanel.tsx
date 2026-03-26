@@ -1,33 +1,63 @@
-import React from 'react';
-import { CheckCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import type { User } from '@/types/Users';
+import { getUsers } from '@/services/userService';
+import { DataTable } from '@/components/ui/data-table';
+import { type ColumnDef } from '@tanstack/react-table';
+import { Badge } from '@/components/ui/badge';
 
-interface DashboardProps {
-  user: { name: string | null; email: string |null};
- 
-}
+const columns: ColumnDef<User>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Ime',
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+  },
+  {
+    accessorKey: 'role',
+    header: 'Uloga',
+    cell: ({ row }) => {
+      const role = row.getValue('role') as string;
+      return (
+        <Badge variant={role === 'admin' ? 'destructive' : role === 'manager' ? 'default' : 'secondary'}>
+          {role}
+        </Badge>
+      );
+    },
+  },
+];
 
-const AdminPanel: React.FC<DashboardProps> = ({ user}) => {
+const AdminPanel: React.FC = () => {
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const data = await getUsers();
+                console.log('Fetched users:', data);
+                setUsers(data);
+            } catch (err: any) {
+                setError(err.message || 'Greška pri učitavanju korisnika');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    if (loading) return <div className="p-8 text-center">Učitavanje...</div>;
+    if (error) return <div className="p-8 text-center text-red-500">{error}</div>;
+
     return (
-       
-         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-           <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center space-y-6">
-             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-               <CheckCircle className="w-8 h-8 text-green-600" />
-             </div>
-           
-    {user?.name}
-             {/* <button
-               onClick={onLogout}
-               className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white py-3 px-4 rounded-lg transition-colors"
-             >
-               <LogOut size={18} /> Odjavi se
-             </button> */}
-           </div>
-
-         </div>
-       );
-       
-    
+        <div className="container mx-auto py-10">
+            <h1 className="text-2xl font-bold mb-6">Pregled Korisnika</h1>
+            <DataTable columns={columns} data={users} />
+        </div>
+    );
 };
 
 export default AdminPanel;

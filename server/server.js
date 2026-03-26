@@ -1,103 +1,52 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import { verifyToken, authorizeRoles } from './middleware/authMiddleware.js';
+import passport from './config/passport.js'; // Import configured passport
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Connect to Database
+connectDB();
+
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000', // Zameni sa portom tvog frontenda (npr. 3000 ili 5173)
+  origin: process.env.CLIENT_URL || 'http://localhost:5173', 
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // Crucial for sending cookies
 }));
 app.use(express.json());
+app.use(cookieParser());
+app.use(passport.initialize()); // Initialize passport
 
-// 1. Povezivanje na MongoDB
-// Zameni 'login_db' sa imenom tvoje baze. 
-// Ako koristiš MongoDB Atlas, ovde ide tvoj "Connection String"
-const MONGO_URI = process.env.MONGO_URI; 
+// Routes
+app.use('/auth', authRoutes);
+   console.log('Učitavam /users rutu...');  
+app.use('/api/users', userRoutes);
 
-mongoose.connect(MONGO_URI)
-  .then(() => console.log('Povezano sa MongoDB bazom'))
-  .catch(err => console.error('Greška pri povezivanju na MongoDB:', err));
-
-// 2. Definisanje šeme korisnika
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
+// Example of a protected route
+app.get('/me', verifyToken, (req, res) => {
+  res.json({ message: 'Ovo su vaši podaci', user: req.user });
 });
 
-const User = mongoose.model('User', userSchema);
-
-// 3. Ruta za registraciju (Upis korisnika u bazu)
-app.post('/register', async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    // Provera da li korisnik već postoji
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Korisnik sa tim emailom već postoji' });
-    }
-
-    // Hešovanje lozinke pre čuvanja
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword
-    });
-
-    await newUser.save();
-    res.status(201).json({ message: 'Korisnik uspešno registrovan' });
-  } catch (error) {
-    res.status(500).json({ message: 'Greška na serveru prilikom registracije' });
-  }
-});
-
-// 4. Ruta za Login (Provera iz baze)
-app.post('/login', async (req, res) => {
-  console.log("Login zahtev primljen za:", req.body.email); // LOG 1
-  try {
-    const { email, password } = req.body;
-
-    // Pronalaženje korisnika u bazi
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: 'Pogrešan email ili lozinka' });
-    }
-    console.log("Korisnik pronađen:", user ? "Da" : "Ne"); // LOG 2
-
-    // Provera lozinke pomoću bcrypt
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Pogrešan email ili lozinka' });
-    }
-
-    // Uspešan login
-    res.status(200).json({
-      message: 'Uspešna prijava',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
-  } catch (error) {
-    console.error("Greška u login ruti:", error); // LOG 3
-    res.status(500).json({ message: 'Greška na serveru prilikom prijave' });
-  }
+// PRIMER: Ruta za izveštaje dostupna samo za admina i managera
+app.get('/api/reports', verifyToken, authorizeRoles('admin', 'manager'), (req, res) => {
+  res.json({ 
+    message: 'Ovo je poverljiv izveštaj', 
+    data: ['Report 1', 'Report 2', 'Report 3'] 
+  });
 });
 
 // Globalni error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Nešto je puklo!');
+  res.status(500).json({ message: 'Nešto je pošlo po zlu na serveru!' });
 });
 
 app.listen(PORT, () => {
