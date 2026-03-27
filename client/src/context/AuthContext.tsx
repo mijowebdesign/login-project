@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import * as authService from '../services/authService';
+import type { User } from '@/types/Users';
 import { setAccessToken } from '../services/baseApi';
 
 interface AuthContextType {
-    user: authService.User | null;
+    user: User | null;
     isAuthenticated: boolean;
     loading: boolean;
-    login: (credentials: authService.LoginRequest) => Promise<void>;
+    login: (credentials: authService.LoginRequest   ) => Promise<void>;
     register: (data: authService.RegisterRequest) => Promise<void>;
     logout: () => Promise<void>;
 }
@@ -14,7 +15,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<authService.User | null>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
     const checkAuth = useCallback(async () => {
