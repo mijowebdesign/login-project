@@ -6,6 +6,7 @@ import AdminPanel from './pages/AdminPanel';
 import MainNavbar from './components/app/MainNavbar';
 import { useAuth } from './context/AuthContext';
 import UserPanel from './pages/UserPanel';
+import ProductDetails from './pages/ProductDetails';
 
 
 const AppLayout = ({ children }: { children: React.ReactNode}) => {
@@ -74,6 +75,10 @@ const AppRouter: React.FC = () => {
       <Route 
         path="/register" 
         element={user ? <Navigate to="/" /> : <RegistrationForm />} 
+      />
+       <Route 
+        path="/details/:id" 
+        element={<AppLayout><ProductDetails /></AppLayout>} 
       />
       <Route 
         path="/" 

@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import productRoutes from './routes/productRoutes.js';
 import { verifyToken, authorizeRoles } from './middleware/authMiddleware.js';
 import passport from './config/passport.js'; // Import configured passport
 
@@ -29,6 +30,7 @@ app.use(passport.initialize()); // Initialize passport
 app.use('/auth', authRoutes);
    console.log('Učitavam /users rutu...');  
 app.use('/api/users', userRoutes);
+app.use('/api/products', productRoutes);
 
 // Example of a protected route
 app.get('/me', verifyToken, (req, res) => {

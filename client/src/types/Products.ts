@@ -1,10 +1,8 @@
 export interface Product {
-    id: number;
+    _id: string;
     title: string;
+    description: string;
+    imageUrl: string;
     category: string;
-    company: string;
-    organic?: boolean;
-    region?: string;
-    price: string;
-    currency: string;
+    price: number;
 }
