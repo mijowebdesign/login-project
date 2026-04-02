@@ -7,6 +7,7 @@ interface ProductDetailsFormProps {
   onSubmit: (data: Partial<Product>) => Promise<void>;
   onCancel?: () => void;
   loading?: boolean;
+  setImageUrl?: (url: string) => void;
 }
 
 const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
@@ -14,6 +15,7 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
   onSubmit,
   onCancel,
   loading = false,
+  setImageUrl,
 }) => {
   const [formData, setFormData] = useState<Partial<Product>>({
     title: initialData?.title || '',
@@ -29,6 +31,9 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
       ...prev,
       [name]: name === 'price' ? parseFloat(value) || 0 : value,
     }));
+    if (name === 'imageUrl' && setImageUrl) {
+      setImageUrl(value);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

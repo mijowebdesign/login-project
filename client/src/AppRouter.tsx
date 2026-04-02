@@ -7,6 +7,7 @@ import MainNavbar from './components/app/MainNavbar';
 import { useAuth } from './context/AuthContext';
 import UserPanel from './pages/UserPanel';
 import ProductDetails from './pages/ProductDetails';
+import AddProduct from './pages/AddProduct';
 
 
 const AppLayout = ({ children }: { children: React.ReactNode}) => {
@@ -80,6 +81,23 @@ const AppRouter: React.FC = () => {
         path="/details/:id" 
         element={<AppLayout><ProductDetails /></AppLayout>} 
       />
+       <Route
+        path="/vegetables"
+        element={
+          <ProtectedRoute >
+            <AddProduct />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/products/new"
+        element={
+          <ProtectedRoute allowedRoles={['manager', 'admin']}>
+            <AddProduct />
+          </ProtectedRoute>
+        }
+      />
+      
       <Route 
         path="/" 
         element={<AppLayout><Dashboard /></AppLayout>} 

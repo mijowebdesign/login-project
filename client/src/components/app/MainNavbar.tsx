@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,6 +9,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { isUserAdmin, isUserManager} from "@/utils/utils";  
 
 import NavbarItems from "./NavbarItems";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -44,6 +52,24 @@ const MainNavbar = () => {
         </div>
 
         <div className="flex items-center gap-4">
+          {(isUserAdmin(user) || isUserManager(user)) && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/products/new"
+                    className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span className="hidden sm:inline">Dodaj</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Dodaj novi proizvod</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
           <LoginDialog 
             open={isLoginOpen} 
             onOpenChange={setIsLoginOpen} 

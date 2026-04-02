@@ -1,4 +1,5 @@
-import baseApi, { setAccessToken } from './baseApi';
+import { setAccessToken } from './baseApi';
+import { postByPathAndData } from './httpClient';
 import type { User } from '@/types/Users';
 
 export interface LoginRequest {
@@ -17,27 +18,27 @@ export interface RegisterRequest extends LoginRequest {
 }
 
 export const login = async (credentials: LoginRequest): Promise<AuthResponse> => {
-    const response = await baseApi.post<AuthResponse>('/auth/login', credentials);
+    const response = await postByPathAndData<AuthResponse>('/auth/login', credentials);
     const { accessToken } = response.data;
     setAccessToken(accessToken);
     return response.data; 
 };
 
 export const register = async (data: RegisterRequest): Promise<{ message: string }> => {
-    const response = await baseApi.post<{ message: string }>('/auth/register', data);
+    const response = await postByPathAndData<{ message: string }>('/auth/register', data);
     return response.data; 
 }
 
 export const logout = async () => {
     try {
-        await baseApi.post('/auth/logout');
+        await postByPathAndData('/auth/logout');
     } finally {
         setAccessToken(null);
     }
 }
 
 export const refresh = async (): Promise<AuthResponse> => {
-    const response = await baseApi.post<AuthResponse>('/auth/refresh');
+    const response = await postByPathAndData<AuthResponse>('/auth/refresh');
     const { accessToken } = response.data;
     setAccessToken(accessToken);
     return response.data;

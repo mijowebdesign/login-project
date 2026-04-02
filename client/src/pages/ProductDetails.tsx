@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/state/useAppDispatch';
 import type { RootState } from '@/state/store';
-import { fetchProductById, updateProduct } from '@/state/product/productSlice';
+import { fetchProductById, updateProduct, deleteProduct } from '@/state/product/productSlice';
 import type { Product } from '@/types/Products';
 import { Loader2, ChevronRight, Home } from 'lucide-react';
 import ProductDetailsForm from '@/components/app/ProductDetailsForm';
 import ProductDetailsView from '@/components/app/ProductDetailsView';
+import { useAuth } from '@/context/AuthContext';
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const canManageProducts = user && (user.role === 'admin' || user.role === 'manager');
 
   const { selectedProduct, loading, error } = useSelector((state: RootState) => state.product);
   const [isEditing, setIsEditing] = useState(false);
@@ -28,6 +32,19 @@ const ProductDetails: React.FC = () => {
       setIsEditing(false);
     }
   };
+
+ const handleDelete = () => {
+  if (id && window.confirm('Da li ste sigurni da želite da obrišete ovaj proizvod?')) {
+    dispatch(deleteProduct(id))
+      .unwrap()
+      .then(() => {
+        navigate('/');
+      })
+      .catch((error) => {
+        console.error('Greška pri brisanju:', error);
+      });
+  }
+};
 
   if (loading && !selectedProduct) {
     return (
@@ -86,7 +103,8 @@ const ProductDetails: React.FC = () => {
             ) : (
               <ProductDetailsView
                 product={selectedProduct}
-                onEditClick={() => setIsEditing(true)}
+                onEditClick={canManageProducts ? () => setIsEditing(true) : undefined}
+                onDeleteClick={canManageProducts ? handleDelete : undefined}
               />
             )}
           </div>
