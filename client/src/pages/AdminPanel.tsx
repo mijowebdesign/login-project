@@ -5,13 +5,12 @@ import { type ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Trash2, Edit2, Check, X } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { type AppDispatch, type RootState } from '@/state/store';
+import { useAppDispatch, useAppSelector } from '@/state/hooks';
 import { fetchUsers, deleteUser, updateUser } from '@/state/user/userSlice';
 
 const AdminPanel: React.FC = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const { users, loading, error } = useSelector((state: RootState) => state.user);
+    const dispatch = useAppDispatch();
+    const { users, loading, error } = useAppSelector((state) => state.user);
     const roles = ["user", "manager", "admin"] as const;
     type Role = typeof roles[number];
 

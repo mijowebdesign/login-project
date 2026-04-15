@@ -1,3 +1,4 @@
+import React, { useEffect } from "react"; 
 import { Link } from "react-router-dom";
 import {
   NavigationMenu,
@@ -9,10 +10,23 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 
-import { productsItems } from "@/constants/navbarItems";
+import { useAppSelector } from "@/state/hooks";
+import { fetchCategories } from "@/state/category/categorySlice";
+import { useAppDispatch } from "@/state/hooks";
 
 
  const NavbarItems = () => {
+    const {categories} = useAppSelector((state) => state.category);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+      // Fetch categories if not already loaded
+      if (categories.length === 0) {
+        dispatch(fetchCategories());
+      }
+    }, [dispatch, categories.length]);
+
+  
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -36,13 +50,14 @@ import { productsItems } from "@/constants/navbarItems";
           <NavigationMenuTrigger>Hrana za vas</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {productsItems.map((component) => (
+              {categories.map((category) => (
                 <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
+                  key={category?.name?.sr}
+                  title={category?.name?.sr}
+                   href={`/products/${category?.slug}`}
+               
                 >
-                  {component.description}
+                {category?.description?.sr || "Nema opisa kategorije."}
                 </ListItem>
               ))}
             </ul>

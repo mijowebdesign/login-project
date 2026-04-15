@@ -1,9 +1,23 @@
+export interface Category {
+    id: string;
+    name?: {
+        sr: string;
+        en: string;
+    };
+    slug?: string;
+    description?: {
+        en: string;
+        sr: string;
+    };
+}
+
+
 export interface Product {
     _id: string;
     title: string;
     description: string;
     imageUrl: string;
-    category: string;
+    category: Category;
     price: number;
 }
 

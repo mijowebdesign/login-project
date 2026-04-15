@@ -22,8 +22,8 @@ const initialState: ProductState = {
     totalProducts: 0
 };
 
-export const fetchProducts = createAsyncThunk('product/fetchProducts', async ({ page, limit }: { page?: number; limit?: number } = {}) => {
-    return await getProducts(page, limit);
+export const fetchProducts = createAsyncThunk('product/fetchProducts', async ({ page, limit, categoryId }: { page?: number; limit?: number; categoryId?: string } = {}) => {
+    return await getProducts(page, limit, categoryId);
 });
 
 export const fetchProductById = createAsyncThunk('product/fetchProductById', async (id: string) => {

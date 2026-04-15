@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { useAppDispatch } from '@/state/useAppDispatch';
-import type { RootState } from '@/state/store';
+import { useAppDispatch, useAppSelector } from '@/state/hooks';
 import { fetchProductById, updateProduct, deleteProduct } from '@/state/product/productSlice';
 import type { Product } from '@/types/Products';
 import { Loader2, ChevronRight, Home } from 'lucide-react';
@@ -17,7 +15,7 @@ const ProductDetails: React.FC = () => {
   const { user } = useAuth();
   const canManageProducts = user && (user.role === 'admin' || user.role === 'manager');
 
-  const { selectedProduct, loading, error } = useSelector((state: RootState) => state.product);
+  const { selectedProduct, loading, error } = useAppSelector((state) => state.product);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {

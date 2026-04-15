@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardAction, CardDescription }
 import { Badge } from "@/components/ui/badge";
 
 
-const DashboardCard: React.FC<{ id: string; title: string; category: string; price: number; imageUrl?: string }> = ({ id, title, category, price , imageUrl }) => {
+const ProductCard: React.FC<{ id: string; title: string; categoryName: string; price: number; imageUrl?: string }> = ({ id, title, categoryName, price , imageUrl }) => {
   return (
    <Card className="relative overflow-hidden group hover:shadow-lg transition-shadow duration-300 max-w-sm max-h-80">
       {/* 1. Link koji prekriva celu karticu */}
@@ -28,10 +28,10 @@ const DashboardCard: React.FC<{ id: string; title: string; category: string; pri
       {/* 3. Sadržaj kartice */}
       <CardHeader>
         <CardTitle className="text-xl">{title}</CardTitle>
-          <CardDescription>{`Zdravo ${category}`}</CardDescription>
+          <CardDescription>{`Zdravo ${categoryName}`}</CardDescription>
           <CardAction>
              <Badge variant="destructive">{price.toFixed(2)} din</Badge>
-             <Badge variant="secondary">{category}</Badge>
+             <Badge variant="secondary">{categoryName}</Badge>
             
         </CardAction>
       </CardHeader>
@@ -48,4 +48,4 @@ const DashboardCard: React.FC<{ id: string; title: string; category: string; pri
   );
 };
 
-export default DashboardCard;
+export default ProductCard;

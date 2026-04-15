@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '@/state/useAppDispatch';
-import { useSelector } from 'react-redux';
-import type { RootState } from '@/state/store';
+import { useAppDispatch, useAppSelector } from '@/state/hooks';
 import { createProduct } from '@/state/product/productSlice';
 import type { Product } from '@/types/Products';
 import ProductDetailsForm from './ProductDetailsForm';
@@ -10,7 +8,7 @@ import ProductDetailsForm from './ProductDetailsForm';
 const AddProductForm: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state: RootState) => state.product);
+  const { loading, error } = useAppSelector((state) => state.product);
   const [imageUrl, setImageUrl] = useState('https://via.placeholder.com/400');
 
   const handleSubmit = async (data: Partial<Product>) => {

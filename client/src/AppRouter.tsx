@@ -8,6 +8,7 @@ import { useAuth } from './context/AuthContext';
 import UserPanel from './pages/UserPanel';
 import ProductDetails from './pages/ProductDetails';
 import AddProduct from './pages/AddProduct';
+import Products from './pages/Products';
 
 
 const AppLayout = ({ children }: { children: React.ReactNode}) => {
@@ -81,14 +82,7 @@ const AppRouter: React.FC = () => {
         path="/details/:id" 
         element={<AppLayout><ProductDetails /></AppLayout>} 
       />
-       <Route
-        path="/vegetables"
-        element={
-          <ProtectedRoute >
-            <AddProduct />
-          </ProtectedRoute>
-        }
-      />
+     
       <Route
         path="/products/new"
         element={
@@ -97,6 +91,11 @@ const AppRouter: React.FC = () => {
           </ProtectedRoute>
         }
       />
+
+      <Route 
+  path="/products/:categoryName" 
+  element={<AppLayout><Products /></AppLayout>} 
+/>
       
       <Route 
         path="/" 
@@ -107,4 +106,4 @@ const AppRouter: React.FC = () => {
   );
 };
 
-export default AppRouter;
+export default AppRouter; 

@@ -1,6 +1,15 @@
-import React, { useState } from 'react';
-import type { Product } from '@/types/Products';
+import React, { useState, useEffect } from 'react';
+import type { Product, Category } from '@/types/Products';
 import { Save, Loader2, Tag, Euro } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/state/hooks';
+import { fetchCategories } from '@/state/category/categorySlice';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ProductDetailsFormProps {
   initialData?: Partial<Product>;
@@ -17,13 +26,29 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
   loading = false,
   setImageUrl,
 }) => {
+  const dispatch = useAppDispatch();
+  const { categories, loading: categoriesLoading } = useAppSelector((state) => state.category);
+
   const [formData, setFormData] = useState<Partial<Product>>({
     title: initialData?.title || '',
     description: initialData?.description || '',
     imageUrl: initialData?.imageUrl || '',
-    category: initialData?.category || '',
+    category: (initialData?.category) || {id: '', name: {sr: '', en: ''}, slug: ''},
     price: initialData?.price || 0,
   });
+
+  useEffect(() => {
+    if (categories.length === 0) {
+      dispatch(fetchCategories());
+    }
+  }, [dispatch, categories.length]);
+
+  const handleCategoryChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      category: {id:value}
+    }));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -88,14 +113,22 @@ const ProductDetailsForm: React.FC<ProductDetailsFormProps> = ({
             <Tag className="w-4 h-4 mr-2" />
             Kategorija
           </label>
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
-          />
+          <Select
+            onValueChange={handleCategoryChange}
+            value={formData.category?.id || ''}
+            disabled={categoriesLoading}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={categoriesLoading ? "Učitavanje..." : "Izaberi kategoriju"} />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id.toString()}>
+                  {cat?.name?.sr || ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <label className="flex items-center text-lg font-medium text-gray-700 mb-1">

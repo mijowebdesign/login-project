@@ -50,7 +50,7 @@ const ProductDetailsView: React.FC<ProductDetailsViewProps> = ({ product, onEdit
               <Tag className="w-4 h-4 mr-2" />
               Kategorija
             </label>
-            <p className="text-gray-900 py-2">{product.category}</p>
+            <p className="text-gray-900 py-2">{product?.category?.name?.sr}</p>
           </div>
           <div>
             <label className="flex items-center text-lg font-medium text-gray-700 mb-1">
